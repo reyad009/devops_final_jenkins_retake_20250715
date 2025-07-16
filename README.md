@@ -2,9 +2,9 @@
 
 
 Jenkins Development:
-1.	Make a pipeline named base pipeline
-a.	Should be triggered when merge request is accepted from dev -> main branch.
-b.	Upon merge acceptance pipeline is triggered
+_1.	Make a pipeline named base pipeline
+_a.	Should be triggered when merge request is accepted from dev -> main branch.
+_b.	Upon merge acceptance pipeline is triggered
 c.	Git code is pulled
 d.	Docker image is built
 i.	Image tag should be: pipeline_build_number-day-month-hour-minute
