@@ -1,0 +1,72 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "reyad009/react-reyad"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', credentialsId: 'github-token', url: 'https://github.com/reyad009/devops_final_jenkins_retake_20250715.git'
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                dir('react-reyad') {
+                    script {
+                        def buildNum = env.BUILD_NUMBER
+                        def dateTag = sh(script: "date '+%d-%m-%H-%M'", returnStdout: true).trim()
+                        def imageTag = "pipeline_${buildNum}-${dateTag}"
+                        env.IMAGE_TAG = imageTag
+                        sh "docker build -t ${IMAGE_NAME}:${imageTag} ."
+                    }
+                }
+            }
+        }
+        stage('Push Docker Image') {
+            steps {
+
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    script {
+                        sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
+                        sh "docker push ${IMAGE_NAME}:${env.IMAGE_TAG}"
+                        sh "docker logout"
+                    }
+                }
+            }
+        }
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+        stage('Update Docker Compose') {
+            steps {
+                script {
+                    sh "sed -i 's|image: reyad009/react-reyad:.*|image: ${IMAGE_NAME}:${env.IMAGE_TAG}|' /var/www/app/devops_final_jenkins_retake_20250715/react-reyad/docker-compose.yml"
+                    dir('/var/www/app/devops_final_jenkins_retake_20250715/react-reyad') {
+                        sh "docker compose down"
+                        sh "docker compose up -d"
+                    }
+                }
+            }
+        }
+        stage('Notification') {
+            steps {
+                script {
+                    sh """
+                      curl -X POST -H "Content-Type: application/json" \
+                      -d '{ "text": "your application has been updated, Imagename:${IMAGE_NAME}:${env.IMAGE_TAG}" }' \
+                      "https://chat.googleapis.com/v1/spaces/AAAA6gesZ6E/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=FNPvshnsRfSwXa3s2kl3XnCBEob8oYLpMI04PUjpvAs"
+                    """
+                }
+            }
+        }
+    }
+    post {
+        always {
+            sh "docker system prune -f"
+        }
+    }
+}
