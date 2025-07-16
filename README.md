@@ -2,11 +2,11 @@
 
 ## Jenkins Development:
 ### 1.	Make a pipeline named base pipeline
-a.	Should be triggered when merge request is accepted from dev -> main branch.
-b.	Upon merge acceptance pipeline is triggered
-c.	Git code is pulled
-d.	Docker image is built
-i.	Image tag should be: pipeline_build_number-day-month-hour-minute
+a.	Should be triggered when merge request is accepted from dev -> main branch.  
+b.	Upon merge acceptance pipeline is triggered  
+c.	Git code is pulled  
+d.	Docker image is built  
+i.	Image tag should be: pipeline_build_number-day-month-hour-minute  
 e.	Docker push to dockerhub (using username and password variable from the jenkins credentials)
 f.	Docker logout
 g.	Clean the workspace
