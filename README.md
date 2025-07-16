@@ -1,8 +1,7 @@
-# devops_final_jenkins_retake_20250715
+# DevOps Final Exam for Jenkins (RETAKE)
 
-
-Jenkins Development:
-1.	Make a pipeline named base pipeline
+## Jenkins Development:
+### 1.	Make a pipeline named base pipeline
 a.	Should be triggered when merge request is accepted from dev -> main branch.
 b.	Upon merge acceptance pipeline is triggered
 c.	Git code is pulled
